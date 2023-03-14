@@ -1,5 +1,5 @@
 import { Data, Order } from "./global"
-import { getCurrentReservedItem, OrderTray, reserveItem, store } from "./store"
+import { getCurrentReservedItem, getStock, OrderTray, reserveItem, store } from "./store"
 
 const BOT_NAMES = [
   'Ava',
@@ -24,6 +24,47 @@ When a customer selects “97”, the bot should be able to return current order
 When a customer selects “0”, the bot should cancel the order if there is.
 */
 
+/** Menu options for the bot */
+const menu = [
+  { value: 1, text: 'Select 1 to place an order' },
+  { value: 99, text: 'Select 99 to checkout order' },
+  { value: 98, text: 'Select 98 to see order history' },
+  { value: 97, text: 'Select 97 to see current order' },
+  { value: 96, text: 'Select 96 to see menu' },
+  { value: 0, text: 'Select 0 to cancel order' }
+]
+
+const menu2 = [
+  { value: '/help', text: 'Select /help to see options' },
+]
+
+const menu3 = [
+  { value: 1, text: 'Select 1 to place an order' },
+]
+
+const menu4 = [
+  { value: 99, text: 'Select 99 to checkout order' },
+  { value: 97, text: 'Select 97 to see current order' },
+  { value: 96, text: 'Select 96 to see menu' },
+  { value: 0, text: 'Select 0 to cancel order' }
+]
+
+const menu5 = [
+  { value: 99, text: 'Select 99 to checkout order' },
+  { value: 96, text: 'Select 96 to see menu' },
+  { value: 0, text: 'Select 0 to cancel order' }
+]
+
+const menu6 = [
+  { value: 97, text: 'Select 97 to see current order' },
+]
+
+interface BotResponse {
+  text: string,
+  options?: { value: any, text: string }[],
+  remark?: string
+}
+
 export class Bot {
   data: Data;
   session: string;
@@ -31,20 +72,6 @@ export class Bot {
   
   /** List of connected clients */
   static clients: Record<string, Data> = {}
-
-  /** Menu options for the bot */
-  menu = [
-    { value: 1, text: 'Select 1 to place an order' },
-    { value: 99, text: 'Select 99 to checkout order' },
-    { value: 98, text: 'Select 98 to see order history' },
-    { value: 97, text: 'Select 97 to see current order' },
-    { value: 96, text: 'Select 96 to see menu' },
-    { value: 0, text: 'Select 0 to cancel order' }
-  ]
-
-  menu2 = [
-    { value: '/help', text: 'Select /help to see menu' },
-  ]
 
   constructor(session: string, data?: Partial<Data>) {
     this.data = {
@@ -66,7 +93,7 @@ export class Bot {
     delete Bot.clients[this.session]
   }
 
-  getGreeting() {
+  getGreeting(): BotResponse {
     if (!this.data.isNewCustomer) {
       let text = `Welcome back!`
       if (this.data.currentOrder) {
@@ -77,30 +104,30 @@ export class Bot {
       }
       return {
         text,
-        options: this.menu
+        options: menu
       }
     }
     this.data.isNewCustomer = false
     return {
       text: `Hi. I'm ${this.data.botName}. I will be your ${RESTAURANT_NAME} waiter! Your personal assistant for placing orders. Whether you're in the mood for takeout, delivery, or dine-in, I'm here to help you find and order your favorite meals. Just let me know what you're in the mood for and I'll take care of the rest. How can I assist you today?`,
-      options: this.menu
+      options: menu
     }
   }
 
-  async getResponse(text: string) {
+  async getResponse(text: string): Promise<BotResponse> {
     const action = await this._mapRequestToAction(text)
     return action
   }
 
-  async _mapRequestToAction(text: string) {
+  async _mapRequestToAction(text: string): Promise <BotResponse> {
     if (this.tray.active && String(text).match(/^(\d+)\s+(\w+)(,\s*\d+\s+\w+)*$/)) {
-      return await this._addToOrder(text)
+      return this._addToOrder(text)
     }
     switch (parseInt(text)) {
       case 1:
         return this._placeOrder()
       case 99:
-        return await this._checkoutOrder()
+        return this._checkoutOrder()
       case 98:
         return this._getOrderHistory()
       case 97:
@@ -112,27 +139,30 @@ export class Bot {
       default:
         return this._getHelp()
     }
+    
+
   }
 
-  _getHelp() {
+  async _getHelp(): Promise<BotResponse> {
     return {
       text: '',
-      options: this.menu
+      options: menu
     }
   }
 
-  _placeOrder() {
+  async _placeOrder(): Promise<BotResponse> {
     if (this.tray.active) {
       return {
         text: `You already have an order in progress. Please checkout your order before placing a new one.`,
-        options: this.menu
+        remark: `Make an order in this format: 3 soda, 5 burger`,
+        options: menu4
       }
     }
     this.tray.active = true
     return this._getMenu()
   }
 
-  async _addToOrder(text: string) {
+  async _addToOrder(text: string): Promise<BotResponse> {
     if (!text) {
       return {
         text: `Could not understand your order. Please try again.`
@@ -202,33 +232,44 @@ export class Bot {
 
     return {
       text: responses.join('\n\n'),
-      options: this.menu2
+      options: menu2
     }
   }
 
-  _getMenu() {
+  async _getMenu(): Promise<BotResponse> {
     // Design in a table format like
     // SN | Item Name | Price
-    const header = 'SN | Item Name   | Price'
-    const sep = '---+-------------+------'
-    const menu = store.map((item, index) => {
-      const sn = (index + 1).toString().padStart(2, '0')
-      const name = item.name.padEnd(11, ' ');
-      // format price to 2 decimal places
-      const price = item.price.toFixed(2).padStart(3, ' ')
-      return `${sn} | ${name} | $ ${price}`
+    const header = '   Item   |  Price  | Qty Remaining'
+    const sep = '----------+---------+--------------'
+    const stocks = await getStock()
+    const menu = stocks.map((item) => {
+      const name = item.name.padEnd(8, ' ');
+      const price = item.price.toFixed(2).padStart(6, ' ')
+      const quantity = item.quantity > 100 ? "∞" : item.quantity
+      return ` ${name} | $${price} | ${quantity}`
     });
-    return {
-      text: `Here is our menu:\n\n${header}\n${sep}\n${menu.join('\n')}`,
+
+    const response: BotResponse =  {
+      text: `Here is our menu:\n\n${header}\n${sep}\n${menu.join('\n')}`
     }
+
+    if (!this.tray.active) {
+      response.options = menu3
+    } else {
+      response.remark = `Make an order in this format: 3 soda, 5 burger`,
+      response.options = menu6
+    }
+
+    return response;
   }
 
-  async _checkoutOrder() {
-    if (!this.tray.active) {
+  async _checkoutOrder(): Promise<BotResponse> {
+    if (!this.data.currentOrder) {
       return {
-        text: `No order to place.`
+        text: `You have no current order.`
       }
     }
+
     this.data.history.push({
       ...(this.data.currentOrder as Order),
       at: Date.now()
@@ -262,60 +303,73 @@ export class Bot {
 
     return {
       text: responses.join('\n\n'),
-      options: this.menu2
+      options: menu2
     }
   }
 
-  _getCurrentOrder() {
-    if (!this.data.currentOrder) {
+  async _getCurrentOrder(): Promise<BotResponse> {
+    if (!this.tray.active) {
       return {
         text: `You have no current order.`
       }
     }
-    const text = (this.data.currentOrder as Order).items.reduce((acc, item) => {
-      return acc + '\n' + `${item.name} - ${item.quantity}`
-    }, 'Current Order:')
+
+    if (this.tray.isEmpty()) {
+      return {
+        text: `Your order is empty`,
+        remark: `Make an order in this format: 3 soda, 5 burger`
+      }
+    }
+
+    let text = 'Current Order:\n'
+    for (const item of this.tray.items) {
+      const price = store.find(i => i.name.toLowerCase() === item.name.toLowerCase())?.price || 0
+      text += `\n${String(item.quantity).padStart(2, ' ')} ${item.name.padEnd(13)} ---> $${(price * item.quantity).toFixed(2)}`
+    }
     return {
       text,
-      options: this.menu2
+      options: menu5
     }
   }
 
-  _cancelOrder() {
+  async _cancelOrder(): Promise<BotResponse> {
     if (!this.data.currentOrder) {
       return {
         text: `No order to cancel.`,
-        options: this.menu2
+        options: menu2
       }
     }
     this.data.currentOrder = null
+    this.tray.empty()
+    this.tray.active = false
     return {
       text: `Order cancelled.`,
-      options: this.menu2
+      options: menu2
     }
   }
 
-  _getOrderHistory() {
+  async _getOrderHistory(): Promise<BotResponse> {
     if (!this.data.history || this.data.history?.length === 0) {
       return {
         text: `You have no order history.`,
-        options: this.menu2
+        options: menu2
       }
     }
     let text = 'Order History:\n', separator = '\n'
     for (const order of this.data.history) {
       text += separator
       text += `Order ID: ${order.id}`
-      for (const item of order.items) {
+      const items = order.items || []
+      for (const item of items) {
         const price = store.find(i => i.name.toLowerCase() === item.name.toLowerCase())?.price || 0
-        text += `\n${item.quantity} ${item.name.padEnd(13)} ---> $${price * item.quantity}`
+        text += `\n${String(item.quantity).padStart(2, ' ')} ${item.name.padEnd(13)} ---> $${(price * item.quantity).toFixed(2)}`
       }
       separator = '\n\n' + '-'.repeat(20) + '\n\n'
     }
 
     return {
       text,
-      options: this.menu2
+      options: menu2
     }
   }
 }

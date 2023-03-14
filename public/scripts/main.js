@@ -4,28 +4,35 @@ const chatBox = document.getElementById('chat-box');
 const messageForm = document.getElementById('msg-form');
 
 const scrollMessages = () => {
-  if (chatBox.scrollHeight > window.innerHeight - 100) {
-    window.scrollTo(0, chatBox.scrollHeight, { behavior: 'smooth' });
-  }
+  window.scrollTo(0, document.body.scrollHeight);
 }
 
-const addBotMessage = ({ text, options }) => {
-  if (!chatBox || !text) return;
+const addBotMessage = ({ text, options, remark }) => {
+  if (!chatBox) return;
 
   const chatEl = document.createElement('div');
   chatEl.classList.add('w-full', 'bg-sky-50/50', 'py-4');
 
   const chatInnerEl = document.createElement('div');
-  chatInnerEl.classList.add('max-w-4xl', 'mx-auto', 'px-4', 'lg:px-0');
+  chatInnerEl.classList.add('max-w-4xl', 'mx-auto', 'px-4', 'lg:px-0', 'text-sm');
 
-  const chatInnerText = document.createElement('pre');
-  chatInnerText.classList.add('min-h-[40px]', 'text-base', 'font-mono', 'whitespace-pre-wrap');
-  chatInnerText.innerHTML = text;
-  chatInnerEl.appendChild(chatInnerText)
+  if (text) {
+    const chatInnerText = document.createElement('pre');
+    chatInnerText.classList.add('text-sm', 'font-mono', 'whitespace-pre-wrap');
+    chatInnerText.innerHTML = text;
+    chatInnerEl.appendChild(chatInnerText)
+  }
+
+  if (remark) {
+    const remarkEl = document.createElement('div');
+    remarkEl.classList.add('my-4', 'text-sm', 'font-light', 'font-mono')
+    remarkEl.textContent = String(remark);
+    chatInnerEl.appendChild(remarkEl);
+  }
 
   if (options) {
     const optionsList = document.createElement('ul');
-    optionsList.classList.add('my-4', 'text-base', 'flex', 'flex-col', 'gap-2');
+    optionsList.classList.add('my-4', 'text-sm', 'flex', 'flex-col', 'gap-2');
     options.forEach((option) => {
       if (!option.text) return;
       const optionEl = document.createElement('li');
@@ -39,8 +46,8 @@ const addBotMessage = ({ text, options }) => {
         optionEl.innerHTML = option.text
       }
       optionsList.appendChild(optionEl);
-      chatInnerEl.appendChild(optionsList);
     });
+    chatInnerEl.appendChild(optionsList);
   }
 
   chatEl.appendChild(chatInnerEl);
@@ -54,7 +61,7 @@ const addSelfMessage = (message) => {
   chatEl.classList.add('w-full', 'py-4');
   chatEl.innerHTML = `
     <div class="max-w-4xl mx-auto px-4 lg:px-0">
-      <pre class="min-h-[40px] text-base font-mono whitespace-pre-wrap">${String(message).trim()}</pre>
+      <pre class="text-sm font-mono whitespace-pre-wrap">${String(message).trim()}</pre>
     </div>
   `;
   chatBox.appendChild(chatEl);

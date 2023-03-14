@@ -11,12 +11,12 @@
   <script src="/socket.io/socket.io.js"></script>
 </head>
 
-<body class="text-base font-sans antialiased text-black bg-zinc-50">
+<body class="text-sm font-sans antialiased text-black bg-zinc-50">
   <nav
     class="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 border-b border-zinc-900/10 bg-zinc-50 supports-backdrop-blur:bg-zinc-50/95">
     <div class="max-w-4xl mx-auto px-4 lg:px-0">
       <div class="py-4">
-        <span class="mr-3 font-bold text-lg">Tasty Tidbits 🍴</span>
+        <span class="mr-3 font-bold text-lg">Tasty Tidbits GPT 😋</span>
       </div>
     </div>
   </nav>
@@ -41,14 +41,15 @@
   </div>
   <div class="fixed bottom-0 inset-x-0 w-full bg-zinc-100">
     <div class="max-w-4xl mx-auto px-4 lg:px-0">
-      <form id="msg-form" class="py-8 max-w-2xl mx-auto">
+      <form id="msg-form" class="pt-8 pb-4 max-w-2xl mx-auto">
         <input autocomplete="off" name="message"
           class="w-full bg-zinc-200/50 px-5 py-3 rounded border-none border-b-2 border-zinc-900/10 focus:border-zinc-900/10 focus:outline-none focus:ring-0"
           type="text" id="message" placeholder="Enter message" />
       </form>
       <div class="px-3 pt-2 pb-3 text-center text-xs text-black/50 md:px-4 md:pt-3 md:pb-6">
         This bot is built to respond to specific messages. If you want to see the full list of commands, type <span
-          class="font-bold">/help</span>.
+          class="font-bold">/help</span>.<br><br>
+          Design concept from Chat Gpt
       </div>
     </div>
   </div>

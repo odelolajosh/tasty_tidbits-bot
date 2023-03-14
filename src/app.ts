@@ -2,9 +2,12 @@ import express, { Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import session from "express-session";
+import dotenv from "dotenv";
 import { Bot } from "./bot";
 import { Cache } from "./cache";
 import RedisStore from "connect-redis";
+
+dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
@@ -19,7 +22,8 @@ let redisStore = new RedisStore({
 })
 
 const sessionMiddleware = session({
-  secret: "SomeHiddenSecret",
+  secret: process.env.SESSION_SECRET!,
+  store: redisStore,
   resave: false,
   saveUninitialized: true,
   cookie: { maxAge: 24 * 60 * 60 * 1000 },

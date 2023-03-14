@@ -2,13 +2,13 @@ import { Cache } from "./cache";
 import { Item } from "./global";
 
 export const store = [
-  { id: 1, name: 'Pizza', price: 10.99, initialQuantity: 50 },
-  { id: 2, name: 'Burger', price: 5.49, initialQuantity: 20 },
-  { id: 3, name: 'Fries', price: 3.99, initialQuantity: 26 },
-  { id: 4, name: 'Soda', price: 2.00, initialQuantity: 100 },
-  { id: 5, name: 'Salad', price: 7.99, initialQuantity: 30 },
-  { id: 6, name: 'Sandwich', price: 6.99, initialQuantity: 40 },
-  { id: 7, name: 'Chicken', price: 8.99, initialQuantity: 70 },
+  { id: 1, name: 'Pizza', price: 10.99, initialQuantity: 500 },
+  { id: 2, name: 'Burger', price: 5.49, initialQuantity: 1000 },
+  { id: 3, name: 'Fries', price: 3.99, initialQuantity: 600 },
+  { id: 4, name: 'Soda', price: 2.00, initialQuantity: 2000 },
+  { id: 5, name: 'Salad', price: 7.99, initialQuantity: 500 },
+  { id: 6, name: 'Sandwich', price: 6.99, initialQuantity: 400 },
+  { id: 7, name: 'Chicken', price: 8.99, initialQuantity: 2000 },
 ]
 
 export class OrderTray {
@@ -49,6 +49,7 @@ export class OrderTray {
     } else {
       this.map.set(name, quantity);
     }
+    this.engaged = true;
   }
 
   get length() {
@@ -69,8 +70,22 @@ export class OrderTray {
 
   set active(value: boolean) {
     this.engaged = value;
+    if (!value) {
+      this.empty()
+    }
   }
 
+}
+
+export const getStock = async () => {
+  const cache = Cache.getInstance();
+  const stocks = []
+  for (const item of store) {
+    const quantity = await cache.client.get(`item_${item.id}`);
+    const stock = { ...item, quantity: quantity ? parseInt(quantity) : item.initialQuantity };
+    if (stock.quantity && stock.quantity > 0) stocks.push(stock);
+  }
+  return stocks;
 }
 
 const getCurrentReservedItemById = async (id: number) => {

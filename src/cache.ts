@@ -6,7 +6,16 @@ export class Cache {
   client: RedisClientType
 
   private constructor() {
-    this.client = createClient()
+    this.client = createClient({
+      password: process.env.REDIS_PASSWORD,
+      socket: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT!),
+      }
+    })
+    this.client.on('error', (err) => {
+      console.log('Error ' + err)
+    })
     this.client.connect().catch(console.error)
   }
 

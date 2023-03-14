@@ -676,6 +676,11 @@ video {
   background-color: rgb(250 250 250 / var(--tw-bg-opacity));
 }
 
+.bg-zinc-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(228 228 231 / var(--tw-bg-opacity));
+}
+
 .px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -714,6 +719,14 @@ video {
   padding-top: 0.5rem;
 }
 
+.pb-4 {
+  padding-bottom: 1rem;
+}
+
+.pt-8 {
+  padding-top: 2rem;
+}
+
 .text-center {
   text-align: center;
 }
@@ -744,6 +757,14 @@ video {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-\[14px\] {
+  font-size: 14px;
+}
+
+.text-\[12px\] {
+  font-size: 12px;
 }
 
 .font-bold {
