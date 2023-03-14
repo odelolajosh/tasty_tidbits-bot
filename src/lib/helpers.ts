@@ -1,17 +1,12 @@
-import { Cache } from "./cache";
-import { Item } from "./global";
+import { store } from "./store";
+import { StubCache } from "./stubs";
+import { Item } from "../global";
 
-export const store = [
-  { id: 1, name: 'Pizza', price: 10.99, initialQuantity: 500 },
-  { id: 2, name: 'Burger', price: 5.49, initialQuantity: 1000 },
-  { id: 3, name: 'Fries', price: 3.99, initialQuantity: 600 },
-  { id: 4, name: 'Soda', price: 2.00, initialQuantity: 2000 },
-  { id: 5, name: 'Salad', price: 7.99, initialQuantity: 500 },
-  { id: 6, name: 'Sandwich', price: 6.99, initialQuantity: 400 },
-  { id: 7, name: 'Chicken', price: 8.99, initialQuantity: 2000 },
-]
-
-export class OrderTray {
+/**
+ * Tray class
+ * This class is used to simulate a tray of items
+ */
+export class Tray {
   private map = new Map<string, number>();
   private engaged = false;
 
@@ -77,8 +72,9 @@ export class OrderTray {
 
 }
 
+const cache = StubCache.getInstance();
+
 export const getStock = async () => {
-  const cache = Cache.getInstance();
   const stocks = []
   for (const item of store) {
     const quantity = await cache.client.get(`item_${item.id}`);
@@ -89,11 +85,9 @@ export const getStock = async () => {
 }
 
 const getCurrentReservedItemById = async (id: number) => {
-  const cache = Cache.getInstance();
   const item = store.find(item => item.id === id);
   if (!item) return null;
   const quantity = await cache.client.get(`item_${id}`);
-  // console.log('reserved item', quantity, 'of', item.name, 'left', item.initialQuantity);
   if (quantity) return { ...item, quantity: parseInt(quantity) };
   return { ...item, quantity: item.initialQuantity };
 }
@@ -105,13 +99,11 @@ export const getCurrentReservedItem = async (name: string) => {
 }
 
 const reserveItemById = async (id: number, quantity=1) => {
-  const cache = Cache.getInstance();
   const reservedItem = await getCurrentReservedItemById(id);
   if (!reservedItem) return false;
   const remaining = reservedItem.quantity - quantity;
   if (remaining < 0) return false;
   cache.client.set(`item_${id}`, remaining);
-  // console.log(`set ${remaining} of item_${id}`);
   return true;
 }
 

@@ -1,5 +1,6 @@
 import { Data, Order } from "./global"
-import { getCurrentReservedItem, getStock, OrderTray, reserveItem, store } from "./store"
+import { getCurrentReservedItem, getStock, reserveItem, Tray } from "./lib/helpers"
+import { store } from "./lib/store"
 
 const BOT_NAMES = [
   'Ava',
@@ -68,7 +69,7 @@ interface BotResponse {
 export class Bot {
   data: Data;
   session: string;
-  tray: OrderTray;
+  tray: Tray;
   
   /** List of connected clients */
   static clients: Record<string, Data> = {}
@@ -80,7 +81,7 @@ export class Bot {
       currentOrder: data?.currentOrder || null,
       isNewCustomer: data?.isNewCustomer === undefined ? true : data?.isNewCustomer
     }
-    this.tray = new OrderTray((this.data.currentOrder as Order)?.items || [])
+    this.tray = new Tray((this.data.currentOrder as Order)?.items || [])
 
     this.session = session
     if (!(session in Bot.clients)) {
