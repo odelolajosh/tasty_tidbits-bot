@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Jost:wght@400;700&family=Spline+Sans+Mono:wght@300;400&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <style>
     .loader {
@@ -49,7 +51,7 @@
   <script src="/socket.io/socket.io.js"></script>
 </head>
 
-<body class="text-sm font-sans antialiased text-black bg-zinc-50">
+<body class="text-base font-sans antialiased text-black bg-zinc-50">
   <nav
     class="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 border-b border-zinc-900/10 bg-zinc-50 supports-backdrop-blur:bg-zinc-50/95">
     <div class="max-w-4xl mx-auto px-4 lg:px-0">
@@ -63,10 +65,10 @@
       <div id="chat-box" class="flex-1 overflow-hidden flex flex-col items-center text-sm mb-64">
         <!-- <div class="w-full bg-sky-50/50 dark:bg-gray-800 py-4">
           <div class="max-w-4xl mx-auto px-4 lg:px-0">
-            <pre class="font-mono min-h-[40px] text-lg">
+            <pre class="font-mono min-h-[40px] text-sm">
               Hi. I'm DinePal. I'm here to help you find the best restaurants in your area. What's your name? 👋
             </pre>
-            <ul class="my-4 text-lg flex flex-col gap-2">
+            <ul class="my-4 text-xs flex flex-col gap-2">
               <li class="cursor-pointer w-fit inline">Enter 1 to Press okay <img width="18" class="inline origin-center -rotate-45"
                   src="/images/right.png" /> </li>
               <li class="cursor-pointer w-fit inline">Enter 1 to Press okay <img width="18" class="inline origin-center -rotate-45"
@@ -87,9 +89,9 @@
           <span class="loader invisible"></span>
         </div>
       </form>
-      <div class="px-3 pt-2 pb-3 text-center text-xs text-black/50 md:px-4 md:pt-3 md:pb-6">
+      <div class="px-3 pt-2 pb-3 text-center text-[13px] text-black/50 md:px-4 md:pt-3 md:pb-6">
         This bot is built to respond to specific messages. If you want to see the full list of commands, type <span
-          class="font-bold">/help</span>.<br><br>
+          class="font-bold">/help</span>.<br>
         Design concept from Chat Gpt
       </div>
     </div>

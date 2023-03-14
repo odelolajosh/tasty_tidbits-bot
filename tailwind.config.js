@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       fontFamily: {
         'mono': ['Spline Sans Mono', ...defaultTheme.fontFamily.mono],
+        'sans': ['Jost', ...defaultTheme.fontFamily.sans],
       }
     }
   },

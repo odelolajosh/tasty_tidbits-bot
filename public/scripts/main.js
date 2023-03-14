@@ -35,11 +35,11 @@ const addBotMessage = ({ text, options, remark }) => {
 
   if (options) {
     const optionsList = document.createElement('ul');
-    optionsList.classList.add('my-4', 'text-sm', 'flex', 'flex-col', 'gap-2');
+    optionsList.classList.add('my-4', 'text-xs', 'flex', 'flex-col', 'gap-2');
     options.forEach((option) => {
       if (!option.text) return;
       const optionEl = document.createElement('li');
-      optionEl.classList.add('cursor-pointer', 'inline', 'w-fit', 'font-mono', 'font-light', 'hover:underline', 'text-sm');
+      optionEl.classList.add('cursor-pointer', 'inline', 'w-fit', 'font-mono', 'font-light', 'hover:underline', 'text-[13px]');
       if (option.value !== undefined) {
         optionEl.innerHTML = `${option.text} <img width="18" class="inline origin-center -rotate-45" src="/images/right.png" />`
         optionEl.addEventListener('click', () => {
