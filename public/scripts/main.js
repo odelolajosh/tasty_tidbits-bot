@@ -2,6 +2,9 @@ const socket = io();
 
 const chatBox = document.getElementById('chat-box');
 const messageForm = document.getElementById('msg-form');
+const loader = messageForm.querySelector('.loader');
+
+let waitingForResponse = false;
 
 const scrollMessages = () => {
   window.scrollTo(0, document.body.scrollHeight);
@@ -68,27 +71,38 @@ const addSelfMessage = (message) => {
   scrollMessages();
 }
 
+const waitForResponse = (flag) => {
+  if (flag) {
+    loader.classList.remove('invisible');
+  } else {
+    loader.classList.add('invisible');
+  }
+  waitingForResponse = flag;
+}
+
 const sendMessage = (message) => {
+  if (waitingForResponse) return;
+  waitForResponse(true);
   addSelfMessage(message);
   socket.emit('message', {
     text: message
   }, (response) => {
     if (response.ok) {
       messageForm.querySelector('input').value = '';
+      waitForResponse(false);
     }
   });
 }
 
 socket.on('connect', () => {
-  console.log('Connected to server');
+  console.log('We\'re ready to chat!\nWelcome to Tasty Tidbit');
 });
 
 socket.on('disconnect', () => {
-  console.log('Disconnected from server');
+  console.log('This is bad. We\'re disconnected from the chat');
 });
 
 socket.on('message', (message) => {
-  console.log(message)
   if (message.type === 'bot') {
     addBotMessage(message);
   } else {

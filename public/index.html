@@ -8,6 +8,44 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:wght@300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
+  <style>
+    .loader {
+      width: 36px;
+      height: 36px;
+      display: inline-block;
+      position: relative;
+    }
+
+    .loader::after,
+    .loader::before {
+      content: '';
+      box-sizing: border-box;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #27272a;
+      position: absolute;
+      left: 0;
+      top: 0;
+      animation: magic_loader 2s linear infinite;
+    }
+
+    .loader::after {
+      animation-delay: 1s;
+    }
+
+    @keyframes magic_loader {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 0;
+      }
+    }
+  </style>
   <script src="/socket.io/socket.io.js"></script>
 </head>
 
@@ -41,15 +79,18 @@
   </div>
   <div class="fixed bottom-0 inset-x-0 w-full bg-zinc-100">
     <div class="max-w-4xl mx-auto px-4 lg:px-0">
-      <form id="msg-form" class="pt-8 pb-4 max-w-2xl mx-auto">
+      <form id="msg-form" class="mt-8 mb-4 max-w-2xl mx-auto relative">
         <input autocomplete="off" name="message"
-          class="w-full bg-zinc-200/50 px-5 py-3 rounded border-none border-b-2 border-zinc-900/10 focus:border-zinc-900/10 focus:outline-none focus:ring-0"
+          class="w-full bg-zinc-200/50 px-5 py-3 pr-[50px] rounded border-none border-b-2 border-zinc-900/10 focus:border-zinc-900/10 focus:outline-none focus:ring-0"
           type="text" id="message" placeholder="Enter message" />
+        <div class="absolute right-0 top-0 h-full w-[50px] justify-center items-center flex">
+          <span class="loader invisible"></span>
+        </div>
       </form>
       <div class="px-3 pt-2 pb-3 text-center text-xs text-black/50 md:px-4 md:pt-3 md:pb-6">
         This bot is built to respond to specific messages. If you want to see the full list of commands, type <span
           class="font-bold">/help</span>.<br><br>
-          Design concept from Chat Gpt
+        Design concept from Chat Gpt
       </div>
     </div>
   </div>
