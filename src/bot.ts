@@ -96,12 +96,14 @@ export class Bot {
 
   getGreeting(): BotResponse {
     if (!this.data.isNewCustomer) {
-      let text = `Welcome back!`
+      let text = `Welcome back! I'm ${this.data.botName} your order bot.`
       if (this.data.currentOrder) {
         text += ` You have an order in progress.`
         for (const item of (this.data.currentOrder as Order).items) {
           text += `\n${item.name} - ${item.quantity}`
         }
+      } else {
+        text += ` How can I assist you today?`
       }
       return {
         text,

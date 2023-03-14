@@ -12,7 +12,8 @@ export class StubCache {
   private constructor() {
     this.client = {
       get: (key: string) => {
-        const item = store.find(item => item.name.toLowerCase() === key.toLowerCase());
+        const id = parseInt(key.split('_')[1]);
+        const item = store.find(item => item.id === id);
         if (!item) return null;
         return item.initialQuantity;
       },
