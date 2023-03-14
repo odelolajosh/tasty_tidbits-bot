@@ -113,5 +113,6 @@ socket.on('message', (message) => {
 messageForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const message = e.target.elements.message.value;
+  if (message.trim().length === 0) return;
   sendMessage(message);
 });
